@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
                        xmlns:s="library://ns.adobe.com/flex/spark"
                        xmlns:mx="library://ns.adobe.com/flex/mx">
@@ -15,8 +15,7 @@ import flash.events.MouseEvent;
 	private var enterNumber:CalculateAll = new CalculateAll(); // для ввода с клавиатуры
 	public var buttonNumber:CalculateAll = new CalculateAll(); // для ввода с визуальных кнопок
 	private var smthing:MyNewClass = new MyNewClass();
-	//public var addition:Number = 3;
-		
+	
 		/*
 		  * Обнуляется значения массивов: 
 					buttonNumber.arrayCurrent  
@@ -36,14 +35,11 @@ import flash.events.MouseEvent;
 			enterNumber.arrayOutputArcs.splice(0);
 			enterNumber.arrayInputArcs.splice(0);
 			enterNumber.arrayMemory.splice(0);
+			enterNumber.arraySlkejkaInput.splice(0);
+			enterNumber.arraySlkejkaOutput.splice(0);
 			enterNumber.resultArrayInputArcs.splice(0);
+			enterNumber.resultArrayOutputArcs.splice(0);
 			arcs.text = " ";
-			
-			trace("enterNumber.arrayMemory after C = " + enterNumber.arrayMemory);
-			trace("enterNumber.resultArrayInputArcs after C = " + enterNumber.resultArrayInputArcs);
-			trace("var arrayCurrent of enterNumber obj after C = " + enterNumber.arrayCurrent);
-			trace("var arrayOutputArcs of enterNumber obj after C = " + enterNumber.arrayOutputArcs);
-			trace("var arrayInputArcs of enterNumber obj after C = " + enterNumber.arrayInputArcs);
 			return result.text = "Нажмите на нижнее поле ввода и введите с клавиатуры значения дуг инцидентности в формате p,t,n,...";
 		}
 		
@@ -54,7 +50,7 @@ import flash.events.MouseEvent;
 			return result.text  =  " ";
 		}
 		
-		/* при нажати кнопки -  обнулить по-элементно вводимый текст в current*/
+		/* при нажати кнопки -  обнулить по-элементно вводимый текст в current???*/
 		public function onButtonMinus(event:MouseEvent):String 
 		{
 			trace("var arrayMemory of buttonNumber obj before =" + buttonNumber.arrayMemory);
@@ -88,7 +84,6 @@ import flash.events.MouseEvent;
 			enterNumber.arrayCurrent.push(arcs.text);// вводит и запоминает в массив данные ввода с клавиатуры
 			arcs.text = " ";//позволяет запоминать по одной цифре в ячейку массива
 			result.text = enterNumber.arrayCurrent.toString();
-			trace(" enterNumber.arrayCurrent =  " + enterNumber.arrayCurrent);
 		}
 		
 				/*
@@ -99,46 +94,37 @@ import flash.events.MouseEvent;
 			  */
 		public function OutputArcs(event:MouseEvent):String
 		{
+			enterNumber.arrayOutputArcs.splice(0);
 			for (var i:int = 0; i < enterNumber.arrayCurrent.length; i++) 
 			{
 			enterNumber.arrayOutputArcs[i] = enterNumber.arrayCurrent[i];
 			}
-			trace("Значение массива arrayCurrent = " + enterNumber.arrayCurrent);
-			trace("Значение массива связности дуг arrayOutputArcs = " + enterNumber.arrayOutputArcs);
 			result.text = "значения Аij+ сохранены ";
 			enterNumber.arrayCurrent.splice(0);
-			trace("Значение массива arrayCurrent = " + enterNumber.arrayCurrent);
-			trace("Значение массива связности дуг arrayOutputArcs = " + enterNumber.arrayOutputArcs);
-			trace("Значение массива дуг предшествования arrayInputArcs = " + enterNumber.arrayInputArcs);
-			
 			return arcs.text  =  " ";
 		}
 		
 				/*
-				  запоминаю в arrayInputArcs в массив Current, 
+				  запоминаю в arrayInputArcs в массив Current, enterNumber.arrayOutputArcs
 				  потом очищаю arrayCurrent,
 				  обнуляю текст в обоих окнах ввода
 				  */
 		public function InputArcs(event:MouseEvent):String
 		{
+			enterNumber.arrayInputArcs.splice(0);
 			for (var i:int = 0; i < enterNumber.arrayCurrent.length; i++) 
 			{
 			enterNumber.arrayInputArcs[i] = enterNumber.arrayCurrent[i];//непосредственное копирование данных
 			}
 			enterNumber.arrayCurrent.splice(0);
-			trace("Длина массива Current после метода splice"+ enterNumber.arrayCurrent.length)
-			trace("Значение массива arrayCurrent = " + enterNumber.arrayCurrent);
-			trace("Значение массива дуг предшествования arrayInputArcs = " + enterNumber.arrayInputArcs);
-			trace("Значение массива связности дуг arrayOutputArcs = " + enterNumber.arrayOutputArcs);
-			
 			result.text = "значения Аij- сохранены";
 			return arcs.text  =  " ";
 		}
-		/*
+		/* Корректна работа на 08.08.18
 		Кнопка для поиска разделяемого ресурса в массиве arrayInputArcs
 		промежуточный результат arrayInputArcs для дальнейшего поиска семафоров и 
-		одновременности в массиве Memory, 
-		в ArrayResult найденные разделяемые ресурсы (тройки) 
+		одновременности остается в массиве Memory, 
+		в Result найденные разделяемые ресурсы (тройки) 
 		*/
 		public function RazdelResurs(event:MouseEvent):String
 		{
@@ -148,14 +134,18 @@ import flash.events.MouseEvent;
 			{
 				enterNumber.arrayMemory[k] = enterNumber.arrayInputArcs[k];
 			}
+			/*Копирую в Current OutputArcs*/
+			for (var m:int = 0; m < enterNumber.arrayOutputArcs.length; m++) 
+			{
+				enterNumber.arrayCurrent[m] = enterNumber.arrayOutputArcs[m];
+			}
 			
 			/*цикл с 0ого элемента массива*/
 			for (var i:int = 0; i < enterNumber.arrayMemory.length; i++)
 			{
-				trace("Начало тела цикла i в поиске раздел ресурса ");
-				trace("Текущее значение i = " + i);
+				trace("Начало тела цикла i в поиске р.р. i ="+ i);
 				/*проверка на наличие данных в элементе с которым будем сравнивать */
-				switch (enterNumber.arrayMemory[i+enterNumber.addition]) 
+				switch (enterNumber.arrayMemory[i+3]) 
 				{
 					case undefined:
 					trace("Проверен весь массив arrayMemory на сравнение с i-м элементом, текущее i =" + i);	
@@ -163,9 +153,10 @@ import flash.events.MouseEvent;
 					
 				default:
 					/*цикл сравнения элементов с  i-м, начиная с номера j (следующего места)
-					 * как только найдем одинаковую пару, i-ый элемент(кортеж) записывается в ResultArray и заменяется на RR, 
-					 * j тоже записывается в ResultArray при этом удаляясь из arrayMemory*/
-					for	(var j:int = i+enterNumber.addition; j < enterNumber.arrayMemory.length; j++)
+					 * как только найдем одинаковую пару, i-ый элемент(кортеж) записывается в ResultArray 
+					 * и заменяется на RR(в конце цикла j), 
+					 * j тоже записывается в ResultArray, при этом, в arrayMemory 2ую тройку заменяю на "RR"*/
+					for	(var j:int = i+3; j < enterNumber.arrayMemory.length; j++)
 					{
 						trace("Начало тела цикла j в поиске раздел ресурса ");
 						trace("Текущее значение j = " + j);
@@ -180,24 +171,72 @@ import flash.events.MouseEvent;
 							trace("Текущее значение j = " + j);
 							trace("Переход к следующему элементу цикла j");
 						}
-						else /*найден второй одинаковый элемент== i - разделяемый ресурс
-								удаляю его методом splice и push в resultArray(укорачиваю количество исследуемых элементов в цикле i и j),
-								исходный элемент с которым сравниваю, запоминаю сразу, enterNumber.arrayMemory[i]
-								заменяю его на RR, чтобы не потерять корректность индексов в цикле i*/
+						else 
 						{
-							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i]); //запомнила первый кортеж из пары одинаковых 
-							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i+1]);
-							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i+2]);
-							enterNumber.arrayMemory.splice(i, enterNumber.addition, "RR", "RR", "RR");//поменяла первую тройку разд.рес.
-							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory.splice(j, enterNumber.addition));//запомнила удаленную найденную тройку разд.рес.
-							trace("else enterNumber.resultArray после push enterNumber.arrayMemory.splice(j, addition)" + enterNumber.resultArrayInputArcs );
-							trace("else enterNumber.arrayMemory после splice(i, addition, RR)" + enterNumber.arrayMemory );
-							
+							/* Поиск  в массиве arrayCurrent==enterNumber.arrayOutputArcs соответсвующих р.р.
+							 * троек, если соответствуют - то сразу в 
+							 * enterNumber.resultArrayOutputArcs*/
+							for (var l:int = 0; l < enterNumber.arrayCurrent.length; l++) 
+							{
+								trace("начало цикла поиска в arrayCurrent==OutputArcs соотв р.р. строк l=" + l);
+								if (Number(enterNumber.arrayMemory[i]) != Number(enterNumber.arrayCurrent[l])) 
+								{
+									trace("j =" + j);
+									l += 2;
+								}
+								else 
+								{
+									if (enterNumber.arrayCurrent[l + 2] == "RR") 
+									{
+									trace("найдена тройка р.р. уже записанная в resultArrayOutputArcs");
+									l += 2;	
+									}
+									else 
+									{
+									enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[l]);
+									enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[l+1]);
+									enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[l + 2]);
+									enterNumber.arrayCurrent.splice(l+2, 1, "RR");
+									trace("j =" + j);
+									l += 2;	
+									}
+									
+								}
+								trace("конец цикла поиска в OutputArcs соотв р.р. строк l=" + l);
+								trace("resultArrayOutputArcs = " + enterNumber.resultArrayOutputArcs);
+								//trace("enterNumber.arrayCurrent = " + enterNumber.arrayCurrent);
+							}
+							/*найден второй одинаковый элемент j == i - разделяемый ресурс
+							меняю его методом splice на "RR" и push в resultArray обе тройки,
+							исходный элемент с которым сравниваю, запоминаю сразу в enterNumber.arrayMemory[i]
+							заменяю его на RR, чтобы не потерять корректность индексов в цикле i*/
+							if (enterNumber.arrayMemory[i + 2] == "RR") 
+							{
+							/*если в найденном кортеже i третий элемент "RR", значит он уже есть в Result, отправляю
+							 * в resultArrayInputArcs вторую тройку р.р.*/
+							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory.splice(j, 3, "RR", "RR", "RR"));//?поменяла 2ую найденную тройку разд.рес
+							trace("enterNumber.resultArrayInputArcs после push enterNumber.arrayMemory.splice(j, 3)" + enterNumber.resultArrayInputArcs);
+							trace("enterNumber.arrayMemory =" + enterNumber.arrayMemory );
 							j += 2;
 							trace("после j += 2; Текущее значение i = " + i);
 							trace("после j += 2; Текущее значение j = " + j);
 							trace("Переход к следующему элементу цикла j");
-							
+							}
+							else 
+							{
+							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i]); //запомнила первый кортеж из пары одинаковых 
+							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i+1]);// получается дубль 1кортежа, если более
+							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i + 2]);
+							enterNumber.arrayMemory.splice(i+2, 1, "RR");//замена третьего элемента 1ого кортежа р.р.
+							trace("enterNumber.arrayMemory после splice(i+2, 1, RR)" + enterNumber.arrayMemory );								
+							enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory.splice(j, 3, "RR", "RR", "RR"));//?поменяла 2ую найденную тройку разд.рес
+							trace("enterNumber.resultArrayInputArcs после push enterNumber.arrayMemory.splice(j, 3)" + enterNumber.resultArrayInputArcs);
+							trace("enterNumber.arrayMemory =" + enterNumber.arrayMemory );
+							j += 2;
+							trace("после j += 2; Текущее значение i = " + i);
+							trace("после j += 2; Текущее значение j = " + j);
+							trace("Переход к следующему элементу цикла j");	
+							}
 						}
 					}
 					trace("Конец тела цикла j");
@@ -206,47 +245,631 @@ import flash.events.MouseEvent;
 				trace("Текущее значение i = " + i);
 				trace("Конец тела цикла i");
 			}
-			/*Делаю 07.08.18: проверка на !=0 resultArrayInputArcs, 
-			 * поиск и удаление из массива resultArrayOutputArcs
-			 * соответствующих р.р. связей*/
-			if(Number(enterNumber.resultArrayInputArcs) != 0)
-			{
-			trace("resultArrayInputArcs не пуст");	
-			}
-			else
-			{
-			trace("resultArrayInputArcs пуст");		
-			}
 			result.text = enterNumber.resultArrayInputArcs.toString();
+			trace(" enterNumber.resultArrayOutputArcs после проверки на р.р." + enterNumber.resultArrayOutputArcs );
 			trace(" enterNumber.resultArrayInputArcs после проверки на р.р." + enterNumber.resultArrayInputArcs );
+			trace(" enterNumber.arrayCurrent после проверки на р.р." + enterNumber.arrayCurrent );
 			trace(" enterNumber.arrayMemory после проверки на р.р." + enterNumber.arrayMemory );
 			trace(" enterNumber.arrayInputArcs после проверки на р.р." + enterNumber.arrayInputArcs );
+			trace(" enterNumber.arrayOutputArcs после проверки на р.р." + enterNumber.arrayOutputArcs );
 			return result.text  +=  " = результат поиска разделяемых ресурсов";
 		}
 		/*
 		Кнопка для поиска семафоров в массивах arrayOutputArcs и arrayInputArcs
 		добавляет в массив ResultInput/ResultOutput найденные семафоры, промежуточная память
-		в массив Current запоминаю массив с максимальной длиной, другой массив в MemoryArray
+		в массив Current запоминаю массив arrayOutputArcs, 
+		в MemoryArray хранятся данные по arrayInputArcs
 		*/
 		public function Semaph(event:MouseEvent):String
 		{
-			
-			//arcs.text  =  " ";
-			trace("Значение массивов дуг предшествования arrayInputArcs = " + enterNumber.arrayInputArcs);
-			trace("Значение массивов дуг следования arrayOutputArcs = " + enterNumber.arrayOutputArcs);
-			return result.text = "+";//вывод на экран результатов
+			for(var i:int = 0; i < enterNumber.arrayMemory.length; i++)
+			{
+					trace("Начало тела цикла i в поиске семафоров i ="+ i);
+					/*проверка на наличие данных в элементе i */
+					switch (enterNumber.arrayMemory[i+2]) 
+					{
+						case "RR":
+						case "S":
+						case undefined:
+							trace("Найден элемент RR/S/undefined: в arrayMemory i+2 =" + (i+2));	
+						break;
+					
+						default:
+							for(var l:int = 0; l < enterNumber.arrayCurrent.length; l++)
+							{
+							trace("Начало тела цикла l в поиске семафоров  ="+ l);
+								switch (enterNumber.arrayCurrent[l+2]) 
+								{
+								case "RR":
+								case "S": 
+										trace("Найден элемент RR/S arrayCurrent, l =" + l);	
+								break;
+								default:
+								if(Number(enterNumber.arrayCurrent[l]) != Number(enterNumber.arrayMemory[i]))
+								{
+									trace("Найден элемент arrayCurrent[l]!=arrayMemory[i], l =" + l);
+								}
+								else
+								{
+									if(Number(enterNumber.arrayCurrent[l+1]) != Number(enterNumber.arrayMemory[i+1]))
+									{
+										trace("p равны в arrayCurrent[l] и arrayMemory[i],а t -нет, l =" + l);
+									}
+									else 
+									{
+										enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i]); //запомнила первый кортеж из пары одинаковых 
+										enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i+1]);
+										enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[i+2]);
+										enterNumber.arrayMemory.splice(i+2, 1, "S");//пометила кортеж семафора, чтобы сохранить корректность цикла i
+										trace("Найден семафор, место enterNumber.arrayMemory[i] = " + enterNumber.arrayMemory[i]);
+										enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[l]); //запомнила кортеж из пары одинаковых 
+										enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[l+1]);
+										enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[l+2]);
+										enterNumber.arrayCurrent.splice(l+2, 1, "S");//пометила кортеж семафороа, чтобы сохранить корректность
+									}
+								}
+								}
+								l +=2;
+								trace("Конец тела цикла l, семафоры l =" + l);
+							}
+						trace("Конец тела цикла & в поиске семафоров i =" + i);
+					}
+				i += 2;
+				trace("Конец тела цикла i = " + i);
+			}
+			result.text = enterNumber.arrayMemory.toString();
+			trace(" enterNumber.resultArrayOutputArcs после проверки на семафор" + enterNumber.resultArrayOutputArcs );
+			trace(" enterNumber.resultArrayInputArcs после проверки на семафор" + enterNumber.resultArrayInputArcs );
+			trace(" enterNumber.arrayCurrent после проверки на семафор" + enterNumber.arrayCurrent );
+			trace(" enterNumber.arrayMemory после проверки на семафор" + enterNumber.arrayMemory );
+			trace(" enterNumber.arrayInputArcs после проверки на семафор" + enterNumber.arrayInputArcs );
+			trace(" enterNumber.arrayOutputArcs после проверки на семафор" + enterNumber.arrayOutputArcs );
+			return result.text  +=  " = результат поиска семафоров";
 		}
 		
 		/*
 		Кнопка для поиска синхронизируемых событиями ресурсов в массивах arrayOutputArcs и arrayInputArcs
 		выводит в массив Memory 
 		*/
-		public function Odnovremennost(event:MouseEvent):String
-		{
+public function Odnovremennost(event:MouseEvent):String
+{
 			trace("Значение массивов дуг предшествования arrayInputArcs = " + enterNumber.arrayInputArcs);
 			trace("Значение массивов дуг следования arrayOutputArcs = " + enterNumber.arrayOutputArcs);
-			return arcs.text  =  "поиск синхронизируемых ресурсов";
+			/*поиск в массиве входных дуг одинаковых значений для перехода, который синхронизирует места
+			 * Tau - */
+			for(var i:int = 1; i < enterNumber.arrayMemory.length; i++)
+			{
+				trace("Начало тела цикла i в поиске синхрон-х ресурсов i ="+ i);
+					/*проверка на наличие данных в элементе i+1(переходы) */
+					switch (enterNumber.arrayMemory[i+1]) 
+					{
+						case "RR":
+						case "S":
+						case "Tau":
+							trace("Найден элемент RR/S/Tau в arrayMemory i+1 =" + (i+1));	
+						break;
+						case undefined:
+								trace("Пропускаем тройку с undefined в arrayMemory,  i+1 =" + (i+1));
+						default:
+						/*второй цикл по тому же массиву на предмет одинаковых переходов,
+						если да -- проверяю чтобы разные места были, и потом создаю новые тройки вместо найденных*/
+						for(var k:int = i+3; k < enterNumber.arrayMemory.length; k++)
+							{
+							trace("Начало тела цикла k в поиске синхрон-х ресурсов  ="+ k);
+								switch (enterNumber.arrayMemory[k+1]) //1) проверка на синхронизацию 
+								{
+								case "RR":
+								case "S": 
+								case "Tau":
+									trace("Пропускаем тройку с RR/S/Tau в arrayMemory, k =" + k);	
+								break;
+							case undefined:
+								trace("Пропускаем тройку с undefined в arrayMemory, k =" + k);
+								break;
+								default:
+									if(enterNumber.arrayMemory[k] != enterNumber.arrayMemory[i]) /*пропускаю разные переходы*/
+									{
+										trace("Найден элемент arrayMemory[k]!=arrayMemory[i], k =" + k);
+									}
+									else
+									{
+										if(enterNumber.arrayMemory[k-1] != enterNumber.arrayMemory[i-1]) /*убеждаюсь, что соответсвт места разные*/
+										{
+										trace("Найдены синхронизируемые ресурсы в k =" + k);
+										/**для случая когда более 2х  синхр ресурсов возможно, i-1ое место запоминаю в тау и соттв строки в Curr отправляю в Склейку*/
+										if(enterNumber.arrayMemory[i+1] != "Tau")
+											{
+											enterNumber.addition = Number(enterNumber.arrayMemory[k])//записываю номер перехода синхронизирующего
+											enterNumber.tau += enterNumber.arrayMemory[i-1].toString();
+											enterNumber.tau += "/" ;
+											enterNumber.tau += enterNumber.arrayMemory[k-1].toString();
+											trace("1ое совпадение: enterNumber.tau ="+ enterNumber.tau);
+											enterNumber.current = Number(enterNumber.arrayMemory.splice(i+1, 1, "Tau"));//пометила первый кортеж синхр. мест и записала в перем current
+											enterNumber.current += Number(enterNumber.arrayMemory.splice(k+1, 1, "Tau"));
+											trace("1ое совпадение: enterNumber.addition ="+ enterNumber.addition);
+											/*нахожу и отправляю в склейку оставшиеся связи синхронизируемых мест(все остальные элементы строки)*/
+											for(var j:int = 0; j < enterNumber.arrayCurrent.length; j++)
+											{
+												trace("Начало тела цикла j в поиске склеиваемых строк в arrayCurrent j="+ j);
+												switch(enterNumber.arrayCurrent[j+2])
+												{
+												case "RR":/**/
+												case "S": 
+												case "Tau":
+													trace("Пропускаем тройку с RR/S/Tau в arrayCurrent j="+ j);	
+												break;
+												case undefined:
+													trace("Пропускаем тройку с undefined в arrayMemory, k =" + k);
+												break;
+												default:
+												/*запоминаю тройки соотв-е 1 синхрон-у элементу enterNumber.arrayMemory[k-1] в массив arraySlkejkaOutput*/
+												if(Number(enterNumber.arrayCurrent[j]) == Number(enterNumber.arrayMemory[k-1]))
+												{
+												enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[j]); //запомнила кортеж  
+												enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[j+1]);
+												enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[j+2]);	
+												enterNumber.arrayCurrent.splice(j+2, 1, "Tau");
+												trace("Записали элементы склеиваемой строки, соотв-ей элементу enterNumber.arrayCurrent[j]" + enterNumber.arrayCurrent[j]);
+												trace("Значение arraySlkejkaOutput p="+ enterNumber.arraySlkejkaOutput);
+												}
+												else
+												{   /*запоминаю тройки соотв-е 2 синхрон-у элементу enterNumber.arrayMemory[k-1] в массив arraySlkejkaOutput*/
+												if (Number(enterNumber.arrayCurrent[j]) == Number(enterNumber.arrayMemory[i-1]))
+													{
+														enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[j]); //запомнила кортеж  
+														enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[j+1]);
+														enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[j+2]);	
+														enterNumber.arrayCurrent.splice(j+2, 1, "Tau");
+														trace("Записали элементы склеиваемой строки, соотв-ей элементу enterNumber.arrayCurrent[j]=" + enterNumber.arrayCurrent[j]);
+														trace("Значение arraySlkejkaOutput p="+ enterNumber.arraySlkejkaOutput);
+													}
+												}
+												}
+												j +=2;
+												trace("Конец тела цикла j в поиске склеиваемых строк в arrayCurrent j="+ j);
+											}
+											}
+										else   /*найден третий и ... синхрониизруемый кортеж для исследуемого элемента i*/
+											{
+											enterNumber.tau += "/" ;
+											enterNumber.tau += enterNumber.arrayMemory[k-1].toString();
+											trace("2ое совпадение: enterNumber.tau ="+ enterNumber.tau);
+											enterNumber.current += Number(enterNumber.arrayMemory.splice(k+1, 1, "Tau"));
+											trace("2ое совпадение: enterNumber.current ="+ enterNumber.current);	
+											/*отправляю в arraySlkejkaOutput кортежи соотв строке 3его синхронизируемого места*/
+											for(var p:int = 0; p < enterNumber.arrayCurrent.length; p++)
+											{
+												trace("Начало тела цикла p в поиске склеиваемых строк в arrayCurrent p="+ p);
+												switch(enterNumber.arrayCurrent[p+2])
+												{
+												case "RR":/**/
+												case "S": 
+												case "Tau":
+												case undefined:
+												trace("Пропускаем тройку с RR/S/Tau/undefined в arrayCurrent p="+ p);	
+												break;
+												default:
+												/*запоминаю тройки имеющие одинаковые места с вновь найденным синхрон-у элементом
+												enterNumber.arrayMemory[k-1] в массив arraySlkejkaOutput*/
+												if(Number(enterNumber.arrayCurrent[p]) == Number(enterNumber.arrayMemory[k-1]))
+												{
+												enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[p]); //запомнила кортеж  
+												enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[p+1]);
+												enterNumber.arraySlkejkaOutput.push(enterNumber.arrayCurrent[p+2]);	
+												enterNumber.arrayCurrent.splice(p+2, 1, "Tau");
+												trace("Записан кортеж склеиваемой строки, соотв-ей  элементу enterNumber.arrayMemory[k-1]="+ enterNumber.arrayMemory[k-1]);
+												trace("Значение arraySlkejkaOutput p="+ enterNumber.arraySlkejkaOutput);
+												}
+												}
+												p +=2;
+												trace("Конец тела цикла p в поиске склеиваемых строк в arrayCurrent p="+ p);
+											}
+											
+											}
+										}
+									}
+								}
+								switch(enterNumber.arrayMemory[k+2]) //2) проверка на необходимость записи в resultArrayInputArcs синхронизируемых кортежей
+								{
+								case undefined:
+										trace("Последний кортеж в цикле k =" + k);	
+										/*проверяю не пуст ли элемент соотв синхрониз-му переходу,
+										push в resultArrayInputArcs, обнуляю tau и current;
+										склеиваю кортежи в склейке и push в resultArrayOutputArcs*/
+										if (enterNumber.addition != 0)
+										{
+										enterNumber.resultArrayInputArcs.push(enterNumber.tau);//места_синхронизируемые
+										enterNumber.resultArrayInputArcs.push(enterNumber.addition);//номер перехода-синхронизатора
+										enterNumber.resultArrayInputArcs.push(enterNumber.current);// суммированное значение дуг инцидентности
+										enterNumber.tau = " ";
+										enterNumber.current = 0;
+										enterNumber.addition = 0;
+										trace("Записаны синхронизируемые ресурсы enterNumber.resultArrayInputArcs =" + enterNumber.resultArrayInputArcs);
+										}
+								break;
+								default:
+								}
+								k +=2;
+							trace("Конец тела цикла k, поиска синхрон-х ресурсов k=" + k);
+							trace("enterNumber.arraySlkejkaOutput =" + enterNumber.arraySlkejkaOutput);
+							}
+					}
+				i +=2;
+				trace("Конец тела цикла i, поиска синхрон-х ресурсов в arrayMemory i="+ i);
+				}
+	/*поиск кортежей в enterNumber.arraySlkejkaOutput с одинаковыми переходами, 
+	склейка их и push в resultArrayOutputArcs*/
+	for(var l:int = 1; l < enterNumber.arraySlkejkaOutput.length; l++)
+	{
+		trace("Начало тела цикла l, поиска склеиваемых-х кортежей l="+ l);
+		switch (enterNumber.arraySlkejkaOutput[l+1]) /*фильтр на отправленные в результат и склееные кортежи, помеченные Tau*/
+		{
+			case "Tau":
+			case undefined:
+				trace("Пропускаем кортеж с /Tau/undefined в arraySlkejkaOutput, l =" + l);	
+			break;
+			default:
+				for(var m:int = l+3; m < enterNumber.arraySlkejkaOutput.length; m++)
+				{
+				if(Number(enterNumber.arraySlkejkaOutput[m]) == Number(enterNumber.arraySlkejkaOutput[l]))
+				{
+					if (enterNumber.arraySlkejkaOutput[l + 1] != "Tau") /*если первое совпадение*/
+					{
+						/*нужно ли обнулять промежуточные контейнеры???*/
+						enterNumber.tau = " ";// значения мест
+						enterNumber.current = 0; // значения кратности дуг
+						enterNumber.addition = 0; // значение синхр-го перехода
+						trace("Значение enterNumber.tau, enterNumber.addition, enterNumber.current =" + enterNumber.tau + enterNumber.addition + enterNumber.current);
+						enterNumber.addition = Number(enterNumber.arraySlkejkaOutput[m])//записываю номер перехода одинакового
+						enterNumber.tau += enterNumber.arraySlkejkaOutput[m-1].toString();
+						enterNumber.tau += "_" ;
+						enterNumber.tau += enterNumber.arraySlkejkaOutput[l-1].toString();
+						enterNumber.current = Number(enterNumber.arraySlkejkaOutput.splice(m+1, 1, "Tau"));
+						enterNumber.current += Number(enterNumber.arraySlkejkaOutput.splice(l+1, 1, "Tau"));
+						trace("1ое совпадение склейки: Значение arraySlkejkaOutput =" + enterNumber.arraySlkejkaOutput);
+						trace("Значение enterNumber.tau, enterNumber.current, enterNumber.addition =" + enterNumber.tau + enterNumber.current + enterNumber.addition);
+						trace("Склеены строки синхронизируемых ресурсов и enterNumber.tau =" + enterNumber.tau);
+					}
+					else 
+					{/*найден третий и ... склеиваемый кортеж */
+						enterNumber.tau += "_" ;
+						enterNumber.tau += enterNumber.arraySlkejkaOutput[m - 1].toString();
+						enterNumber.current += Number(enterNumber.arraySlkejkaOutput.splice(m + 1, 1, "Tau"));
+						trace("2ое совпадение склейки: Значение arraySlkejkaOutput ="+ enterNumber.arraySlkejkaOutput);
+						trace("Склеены строки синхронизируемых ресурсов и enterNumber.tau =" + enterNumber.tau);
+					}
+				}
+			switch (enterNumber.arraySlkejkaOutput[m+3]) /*если конец цикла m поиска склеиваемых ресурсов*/
+				{
+				case undefined:
+					if (enterNumber.addition !=0) /*проверка на наличие склеенных кортежей*/
+					{
+						enterNumber.resultArrayOutputArcs.push(enterNumber.tau);//места_склеиваемые 
+						enterNumber.resultArrayOutputArcs.push(enterNumber.addition);//номер перехода-синхронизатора
+						enterNumber.resultArrayOutputArcs.push(enterNumber.current);// суммированное значение дуг инцидентности
+						enterNumber.tau = " "; /*обнуляю промежуточую память*/
+						enterNumber.current = 0;
+						enterNumber.addition = 0;
+						trace("Склейка сделана, Значение resultArrayOutputArcs ="+ enterNumber.resultArrayOutputArcs);
+					}
+					else /*склейки не было, отправляю в результат первый из рассматриваемых элементов*/
+					{
+					enterNumber.resultArrayOutputArcs.push(enterNumber.arraySlkejkaOutput[l-1]);
+					enterNumber.resultArrayOutputArcs.push(enterNumber.arraySlkejkaOutput[l]);
+					enterNumber.resultArrayOutputArcs.push(enterNumber.arraySlkejkaOutput[l + 1]);
+					trace("Склейки нет, Значение resultArrayOutputArcs ="+ enterNumber.resultArrayOutputArcs);
+					}
+				break;
+				default:
+				}
+			m +=2;
+			trace("Конец тела цикла m, поиска склеиваемых-х кортежей m=" + m);
+			}
 		}
+		switch (enterNumber.arraySlkejkaOutput[l+2]) /*ловлю крайние элементы для которых нет цикла m????*/
+			{
+				case undefined:
+					if (enterNumber.arraySlkejkaOutput[l+1] != "Tau") 
+					{
+					enterNumber.resultArrayOutputArcs.push(enterNumber.arraySlkejkaOutput[l-1]);
+					enterNumber.resultArrayOutputArcs.push(enterNumber.arraySlkejkaOutput[l]);
+					enterNumber.resultArrayOutputArcs.push(enterNumber.arraySlkejkaOutput[l + 1]);
+					trace("Последний элемент цикла l, Значение resultArrayOutputArcs ="+ enterNumber.resultArrayOutputArcs);	
+					}
+				break;
+				default:
+				trace("Конец тела цикла l, нет кортежей для сравнения m=" + m);
+			}	
+		l +=2;
+		trace("Конец тела цикла l, поиска склеиваемых-х кортежей l=" + l);
+		//enterNumber.arraySlkejkaOutput.splice(0);
+		//trace("Конец склейки для данного значения l,  enterNumber.arraySlkejkaOutput =" + enterNumber.arraySlkejkaOutput);
+	}
+/*Tau +
+	идентичная работа, но для массива выходных дуг поиск синхронизируемых ресурсов*/
+	for(var f:int = 1; f < enterNumber.arrayCurrent.length; f++)
+	{
+		trace("Начало тела цикла i в поиске синхрон-х ресурсов f ="+ f);
+		/*проверка на наличие меток в элементе f+1(переходы f...) */
+		switch (enterNumber.arrayCurrent[f+1]) 
+		{
+		case "RR":
+		case "S":
+		case "Tau":
+		case undefined:
+			trace("Найден элемент RR/S/Tau/undefined в arrayMemory f+1 =" + (f+1));	
+		break;
+		default:
+		/*второй цикл по тому же массиву на предмет одинаковых переходов,
+		если да -- проверяю чтобы разные места были, и потом создаю новые тройки вместо найденных*/
+		for(var g:int = f+3; g < enterNumber.arrayCurrent.length; g++)
+		{
+			trace("Начало тела цикла g в поиске синхрон-х ресурсов g ="+ g);
+			switch (enterNumber.arrayCurrent[g+1]) //1) проверка на синхронизацию 
+			{
+			case "RR":
+			case "S": 
+			case "Tau":
+			case undefined:
+				trace("Пропускаем тройку с RR/S/Tau/undefined в arrayCurrent, g =" + g);	
+			break;
+			default:
+				if(enterNumber.arrayCurrent[g] != enterNumber.arrayCurrent[f]) /*пропускаю разные переходы*/
+				{
+					trace("Найден элемент arrayCurrent[g]!=arrayCurrent[f], g =" + g);
+				}
+				else
+				{
+					if(enterNumber.arrayCurrent[g-1] != enterNumber.arrayCurrent[f-1]) /*убеждаюсь, что соответсвт места разные*/
+					{
+						trace("Найдены синхронизируемые ресурсы в g =" + g);
+						/**для случая когда более 2х  синхр ресурсов возможно, (f-1)ое место запоминаю в тау и соттв строки в Memory отправляю в Склейку*/
+						if(enterNumber.arrayCurrent[f+1] != "Tau")
+						{
+							enterNumber.addition = Number(enterNumber.arrayCurrent[g])//записываю номер перехода синхронизирующего
+							//enterNumber.tau += "+" ;
+							enterNumber.tau += enterNumber.arrayCurrent[g-1].toString();
+							enterNumber.tau += "/" ;
+							enterNumber.tau += enterNumber.arrayCurrent[f-1].toString();
+							trace("1ое совпадение: enterNumber.tau ="+ enterNumber.tau);
+							enterNumber.current = Number(enterNumber.arrayCurrent.splice(f+1, 1, "Tau"));//пометила первый кортеж синхр. мест и записала в перем current
+							enterNumber.current += Number(enterNumber.arrayCurrent.splice(g+1, 1, "Tau"));
+							trace("1ое совпадение: enterNumber.addition =" + enterNumber.addition);
+							/*650 для последующего синхрониз-го ресурса*/
+							/*нахожу и отправляю в "склейку" оставшиеся связи синхронизируемых мест(все остальные элементы строки)*/
+							for(var h:int = 0; h < enterNumber.arrayMemory.length; h++)
+							{
+								trace("Начало тела цикла h в поиске склеиваемых строк в arrayMemory h="+ h);
+								switch(enterNumber.arrayMemory[h+2])
+								{
+								case "RR":/**/
+								case "S": 
+								case "Tau":
+								case undefined:
+									trace("Пропускаем тройку с RR/S/Tau/undefined в arrayMemory h="+ h);	
+								break;
+								default:
+								/*запоминаю тройки соотв-е 1 синхрон-у элементу enterNumber.arrayCurrent[g-1] в массив arraySlkejkaInput*/
+									if(Number(enterNumber.arrayMemory[h]) == Number(enterNumber.arrayCurrent[g-1]))
+									{
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[h]); //запомнила кортеж  
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[h+1]);
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[h+2]);	
+										enterNumber.arrayMemory.splice(h+2, 1, "Tau");
+										trace("Записали элементы склеиваемой строки, соотв-ей элементу enterNumber.arrayMemory[h]" + enterNumber.arrayMemory[h]);
+										trace("Значение arraySlkejkaInput ="+ enterNumber.arraySlkejkaInput);
+									}
+									else
+									{   /*запоминаю тройки соотв-е 2 синхрон-у элементу enterNumber.arrayCurrent[g-1] в массив arraySlkejkaInput*/
+										if (Number(enterNumber.arrayMemory[h]) == Number(enterNumber.arrayCurrent[f-1]))
+										{
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[h]); //запомнила кортеж  
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[h+1]);
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[h+2]);	
+										enterNumber.arrayMemory.splice(h+2, 1, "Tau");
+										trace("Записали элементы склеиваемой строки, соотв-ей  элементу enterNumber.arrayMemory[h] =" +enterNumber.arrayMemory[h]);
+										trace("Значение arraySlkejkaInput ="+ enterNumber.arraySlkejkaInput);
+										}
+									}
+								}
+							h +=2;
+							trace("Конец тела цикла h в поиске склеиваемых строк в arrayMemory h="+ h);
+							}
+						}
+						else   /*найден третий и ... синхрониизруемый кортеж */
+						{
+							enterNumber.tau += "/" ;
+							enterNumber.tau += enterNumber.arrayCurrent[g-1].toString();
+							trace("2ое совпадение: enterNumber.tau ="+ enterNumber.tau);
+							enterNumber.current += Number(enterNumber.arrayCurrent.splice(g+1, 1, "Tau"));
+							trace("2ое совпадение: enterNumber.current =" + enterNumber.current);	
+							/*цикл копирования в склейку соотв кортежей*/
+							for(var q:int = 0; q < enterNumber.arrayMemory.length; q++)
+							{
+								trace("Начало тела цикла q в поиске склеиваемых строк в arrayMemory q="+ q);
+								switch(enterNumber.arrayMemory[q+2])
+								{
+								case "RR":/**/
+								case "S": 
+								case "Tau":
+								case undefined:
+									trace("Пропускаем тройку с RR/S/Tau/undefined в arrayMemory q="+ q);	
+								break;
+								default:
+								/*запоминаю тройки arrayMemory, имеющие одинаковые места с вновь найденным синхрон-у элементом
+								enterNumber.arrayCurrent[g-1] в массив arraySlkejkaInput*/
+									if(Number(enterNumber.arrayMemory[q]) == Number(enterNumber.arrayCurrent[g-1]))
+									{
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[q]); //запомнила кортеж  
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[q+1]);
+										enterNumber.arraySlkejkaInput.push(enterNumber.arrayMemory[q+2]);	
+										enterNumber.arrayMemory.splice(q+2, 1, "Tau");
+										trace("Записан кортеж склеиваемой строки, соотв-ей  элементу enterNumber.arrayCurrent[g-1]="+ enterNumber.arrayCurrent[g-1]);
+										trace("Значение arraySlkejkaInput ="+ enterNumber.arraySlkejkaInput);
+									}
+								}
+							q +=2;
+							trace("Конец тела цикла q в поиске склеиваемых строк в enterNumber.arrayMemory q="+ q);
+							}
+						}
+					}
+				}
+			}
+			switch(enterNumber.arrayCurrent[g+2]) //2) проверка на необходимость записи в Результат 
+			{
+			case undefined:
+				trace("Последний кортеж в цикле g =" + g);	
+				/*проверяю не пуст ли элемент соотв синхрониз-му переходу,
+				push в resultArrayOutputArcs, обнуляю tau и current;
+				склеиваю кортежи в склейке и push в resultArrayInputArcs*/
+				if (enterNumber.addition != 0)
+				{
+					enterNumber.resultArrayOutputArcs.push(enterNumber.tau);//места_синхронизируемые в результат
+					enterNumber.resultArrayOutputArcs.push(enterNumber.addition);//номер перехода-синхронизатора
+					enterNumber.resultArrayOutputArcs.push(enterNumber.current);// суммированное значение дуг инцидентности
+					enterNumber.tau = " ";
+					enterNumber.current = 0;
+					enterNumber.addition = 0;
+					trace("Найдены синхронизируемые ресурсы enterNumber.resultArrayOutputArcs =" + enterNumber.resultArrayOutputArcs);
+				}
+			break;
+			default:
+			}
+		g +=2;
+		trace("Конец тела цикла g, поиска синхрон-х ресурсов g="+ g);
+		}
+	}
+	f +=2;
+	trace("Конец тела цикла f, поиска синхрон-х ресурсов в arrayCurrent f="+ f);
+	}
+/*поиск кортежей в enterNumber.arraySlkejkaInput с одинаковыми переходами, 
+склейка их и push в resultArrayInputArcs*/
+	for(var r:int = 1; r < enterNumber.arraySlkejkaInput.length; r++)
+	{
+		trace("Начало тела цикла r, поиска склеиваемых-х кортежей r="+ r);
+		switch (enterNumber.arraySlkejkaInput[r+1])/*проверка на метки*/
+		{
+			case "Tau":
+			case undefined:
+				trace("Пропускаем кортеж с /Tau/undefined в arraySlkejkaInput, r =" + r);	
+			break;
+			default:
+			for(var s:int = r+3; s < enterNumber.arraySlkejkaInput.length; s++)
+			{
+				if(Number(enterNumber.arraySlkejkaInput[s]) == Number(enterNumber.arraySlkejkaInput[r]))
+				{
+					if (enterNumber.arraySlkejkaInput[r + 1] != "Tau") /*если первое совпадение*/
+					{
+					enterNumber.addition = Number(enterNumber.arraySlkejkaInput[s])//записываю номер перехода одинакового
+					enterNumber.tau += enterNumber.arraySlkejkaInput[r-1].toString();
+					enterNumber.tau += "_" ;
+					enterNumber.tau += enterNumber.arraySlkejkaInput[s-1].toString();
+					enterNumber.current = Number(enterNumber.arraySlkejkaInput.splice(s+1, 1, "Tau"));//помечаю второй
+					enterNumber.current += Number(enterNumber.arraySlkejkaInput.splice(r+1, 1, "Tau"));//первый из склееных не меняю
+					trace("1ое совпадение: Значение arraySlkejkaInput ="+ enterNumber.arraySlkejkaInput);
+					trace("Склеены строки синхронизируемых ресурсов и enterNumber.tau =" + enterNumber.tau);
+					}
+					else 
+					{/*найден третий и ... склеиваемый кортеж */
+					enterNumber.tau += "_" ;
+					enterNumber.tau += enterNumber.arraySlkejkaInput[s - 1].toString();
+					enterNumber.current += Number(enterNumber.arraySlkejkaInput.splice(s+1, 1, "Tau"));
+					trace("Склеены строки синхронизируемых ресурсов и enterNumber.tau =" + enterNumber.tau);
+					}
+				}
+			switch (enterNumber.arraySlkejkaInput[s+3]) /*проверка конца цикла s поиска склеиваемых ресурсов для элемента r*/
+			{
+			case undefined:
+				if (enterNumber.addition !=0) /*проверка на наличие склеенных кортежей*/
+				{
+					enterNumber.resultArrayInputArcs.push(enterNumber.tau);//места_склеиваемые 
+					enterNumber.resultArrayInputArcs.push(enterNumber.addition);//номер перехода-синхронизатора
+					enterNumber.resultArrayInputArcs.push(enterNumber.current);// суммированное значение дуг инцидентности
+					enterNumber.tau = " "; /*обнуляю промежуточую память*/
+					enterNumber.current = 0;
+					enterNumber.addition = 0;
+					trace("Склееные строки синхронизируемых ресурсов отправлены в enterNumber.resultArrayInputArcs =" + enterNumber.resultArrayInputArcs);
+				}
+				else /*склейки не было, отправляю в результат r-ый из проверяемых кортежей*/
+				{
+					enterNumber.resultArrayInputArcs.push(enterNumber.arraySlkejkaInput[r-1]);
+					enterNumber.resultArrayInputArcs.push(enterNumber.arraySlkejkaInput[r]);
+					enterNumber.resultArrayInputArcs.push(enterNumber.arraySlkejkaInput[r+1]);
+					trace("Запомнили кортеж, который не надо клеить enterNumber.resultArrayInputArcs =" + enterNumber.resultArrayInputArcs);
+				}
+			break;
+			default:
+			trace("Цикл сравниваемых кортежей не закончен. s=" + s);
+			}
+		s +=2;
+		trace("Конец тела цикла s, поиска склеиваемых-х кортежей s="+ s);	
+		}
+		}
+		switch (enterNumber.arraySlkejkaInput[r+2]) /*ловлю крайние элементы для которых нет цикла s*/
+			{
+				case undefined:
+					enterNumber.resultArrayInputArcs.push(enterNumber.arraySlkejkaInput[r-1]);
+					enterNumber.resultArrayInputArcs.push(enterNumber.arraySlkejkaOutput[r]);
+					enterNumber.resultArrayInputArcs.push(enterNumber.arraySlkejkaOutput[r + 1]);
+					trace("Последний элемент цикла r, Значение resultArrayInputArcs ="+ enterNumber.resultArrayInputArcs);
+				break;
+				default:
+				trace("Конец тела цикла r, нет кортежей для сравнения s=" + s);
+			}
+		r +=2;
+		trace("Конец тела цикла r, поиска склеиваемых-х кортежей r="+ r);
+		//enterNumber.arraySlkejkaInput.splice(0);
+		trace("Конец склейки.enterNumber.arraySlkejkaInput =" + enterNumber.arraySlkejkaInput);
+	}
+/*конец блока Tau +*/
+	/*Начало блока поиска кортежей ню(без меток) в массиве arrayMemory==Input*/
+for(var a:int = 2; a < enterNumber.arrayMemory.length; a++)
+{
+	switch(enterNumber.arrayMemory[a])
+	{
+		case "RR":/**/
+		case "S": 
+		case "Tau":
+		case undefined:
+			trace("Пропускаем кортеж с RR/S/Tau/undefined в arrayMemory a="+ a);	
+		break;
+		default:
+			enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[a-2]);
+			enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[a-1]);
+			enterNumber.resultArrayInputArcs.push(enterNumber.arrayMemory[a]);
+			trace("Запомнили кортеж ню, enterNumber.resultArrayInputArcs =" + enterNumber.resultArrayInputArcs);	
+	}
+	a += 2;
+}
+for(var b:int = 2; b < enterNumber.arrayCurrent.length; b++)
+{
+	switch(enterNumber.arrayCurrent[b])
+	{
+		case "RR":/**/
+		case "S": 
+		case "Tau":
+		case undefined:
+			trace("Пропускаем кортеж с RR/S/Tau/undefined в arrayCurrent b="+ b);	
+		break;
+		default:
+			enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[b-2]);
+			enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[b-1]);
+			enterNumber.resultArrayOutputArcs.push(enterNumber.arrayCurrent[b]);
+			trace("Запомнили кортеж ню, enterNumber.resultArrayOutputArcs =" + enterNumber.resultArrayOutputArcs);	
+	}
+	b += 2;
+}
+
+	/*Конец блока поиска кортежей ню*/
+			trace(" enterNumber.resultArrayOutputArcs после поиска синхронизируемых ресурсов" + enterNumber.resultArrayOutputArcs );
+			trace(" enterNumber.resultArrayInputArcs после поиска синхронизируемых ресурсов" + enterNumber.resultArrayInputArcs );
+			trace(" enterNumber.arrayCurrent после поиска синхронизируемых ресурсов" + enterNumber.arrayCurrent );
+			trace(" enterNumber.arrayMemory после поиска синхронизируемых ресурсов" + enterNumber.arrayMemory );
+			result.text = "Aij+";
+			result.text += enterNumber.resultArrayOutputArcs.toString();
+			result.text += "Aij-";
+			return result.text  +=  enterNumber.resultArrayInputArcs.toString();
+}
 
 
 		]]>
